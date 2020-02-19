@@ -1,8 +1,15 @@
-﻿@{
+@{
     ViewData["Title"] = "Home Page";
 }
 
+<div class="toast-header">
+    <h1 class="display-4">Put your big boy pants on it's game time</h1>
+</div>
+
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <canvas id="myCanvas" width="1200" height="1200" style="border:1px solid #000000;"></canvas>
+    <script>
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+    </script>
 </div>
