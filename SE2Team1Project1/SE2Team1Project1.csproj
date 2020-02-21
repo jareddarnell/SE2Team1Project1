@@ -6,4 +6,11 @@
 
 
 
+  <ItemGroup>
+    <Compile Remove="SignalRTest.cs" />
+    <Compile Remove="SignalRChat.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Views\Home\Chat.html" />
+  </ItemGroup>
 </Project>
