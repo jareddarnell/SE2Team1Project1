@@ -3,46 +3,47 @@
 }
 
 <div class="toast-header">
-    <h1 class="display-4">Put your big boy pants on it's game time</h1>
+    Put on your big boy pants it's game time
 </div>
+
+@*<div class="text-center">
+    <canvas width="1200" height="1200" id="canvas"></canvas>
+</div>*@
 
 <div class="text-center">
-    <canvas id="grid"></canvas>
-</div>
+    <script>
 
+        var lastClicked;
+        var grid = clickableGrid(25, 25, function (el, row, col, i) {
+            console.log("You clicked on element:", el);
+            console.log("You clicked on row:", row);
+            console.log("You clicked on col:", col);
+            console.log("You clicked on item #:", i);
 
-<script>
-    var drawGrid = function (w, h, id) {
-        var canvas = document.getElementById(id);
-        var ctx = canvas.getContext('2d');
-        ctx.canvas.width = w;
-        ctx.canvas.height = h;
+            el.className = 'clicked';
+            if (lastClicked) lastClicked.className = '';
+            lastClicked = el;
+        });
 
-        var data = '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"> \
-        <defs> \
-            <pattern id="smallGrid" width="8" height="8" patternUnits="userSpaceOnUse"> \
-                <path d="M 8 0 L 0 0 0 8" fill="none" stroke="gray" stroke-width="0.5" /> \
-            </pattern> \
-            <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse"> \
-                <rect width="80" height="80" fill="url(#smallGrid)" /> \
-                <path d="M 80 0 L 0 0 0 80" fill="none" stroke="gray" stroke-width="1" /> \
-            </pattern> \
-        </defs> \
-        <rect width="100%" height="100%" fill="url(#smallGrid)" /> \
-    </svg>';
+        document.body.appendChild(grid);
 
-        var DOMURL = window.URL || window.webkitURL || window;
-
-        var img = new Image();
-        var svg = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
-        var url = DOMURL.createObjectURL(svg);
-
-        img.onload = function () {
-            ctx.drawImage(img, 0, 0);
-            DOMURL.revokeObjectURL(url);
+        function clickableGrid(rows, cols, callback) {
+            var i = 0;
+            var grid = document.createElement('table');
+            grid.className = 'grid';
+            for (var r = 0; r < rows; ++r) {
+                var tr = grid.appendChild(document.createElement('tr'));
+                for (var c = 0; c < cols; ++c) {
+                    var cell = tr.appendChild(document.createElement('td'));
+                    cell.innerHTML = ++i;
+                    cell.addEventListener('click', (function (el, r, c, i) {
+                        return function () {
+                            callback(el, r, c, i);
+                        }
+                    })(cell, r, c, i), false);
+                }
+            }
+            return grid;
         }
-        img.src = url;
-    }
-    drawGrid(1200, 1200, "grid");
-</script>
-
+    </script>
+</div>
