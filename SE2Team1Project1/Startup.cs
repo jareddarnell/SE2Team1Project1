@@ -53,7 +53,7 @@ namespace SE2Team1Project1
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapHub<ChatHub>("/chatHub");
+                endpoints.MapHub<Hubs.BoardHub>("/boardHub"); //Set the endpoint to the boardhub hub that was created
             });
         }
     }
