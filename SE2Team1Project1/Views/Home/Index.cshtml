@@ -6,47 +6,60 @@
     Put on your big boy pants it's game time
 </div>
 
-@*<div class="text-center">
-        <canvas width="1200" height="1200" id="canvas"></canvas>
-    </div>*@
-
 <div class="text-center">
+    <canvas id="grid"></canvas>
+
     <script>
+        var drawGrid = function (w, h, id) {
+            var canvas = document.getElementById(id);
+            var ctx = canvas.getContext('2d');
+            ctx.canvas.width = w;
+            ctx.canvas.height = h;
 
-        var lastClicked;
-        var grid = clickableGrid(25, 25, function (el, row, col, i) {
-            console.log("You clicked on element:", el);
-            console.log("You clicked on row:", row);
-            console.log("You clicked on col:", col);
-            console.log("You clicked on item #:", i);
 
-            el.className = 'clicked';
-            if (lastClicked) lastClicked.className = '';
-            lastClicked = el;
-        });
-
-        document.body.appendChild(grid);
-
-        function clickableGrid(rows, cols, callback) {
-            var i = 0;
-            var grid = document.createElement('table');
-            grid.className = 'grid';
-            for (var r = 0; r < rows; ++r) {
-                var tr = grid.appendChild(document.createElement('tr'));
-                for (var c = 0; c < cols; ++c) {
-                    var cell = tr.appendChild(document.createElement('td'));
-                    cell.innerHTML = ++i;
-                    cell.addEventListener('click', (function (el, r, c, i) {
-                        return function () {
-                            callback(el, r, c, i);
-                        }
-                    })(cell, r, c, i), false);
+            for (x = 0; x <= w; x += 20) {
+                for (y = 0; y <= h; y += 20) {
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, h);
+                    ctx.stroke();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(w, y);
+                    ctx.stroke();
                 }
             }
-            return grid;
+
+        };
+        drawGrid(500, 500, "grid");
+
+
+        function getCursorPosition(canvas, event) {
+            const rect = canvas.getBoundingClientRect()
+            const x = event.clientX - rect.left
+            const y = event.clientY - rect.top
+            //console.log("x: " + x + " y: " + y)
+            getSquare(x, y)
         }
+
+        const canvas = document.querySelector('canvas')
+        canvas.addEventListener('mousedown', function (e) {
+            getCursorPosition(canvas, e)
+        })
+
+        function getSquare(x, y) {
+            var sqrX = Math.trunc(x / 20);
+            var sqrY = Math.trunc(y / 20);
+            console.log("Square location - x: " + sqrX + " y: " + sqrY);
+            colorSquare(sqrX, sqrY);
+        }
+
+        function colorSquare(sqrX, sqrY) {
+
+        }
+
     </script>
+
 </div>
+
 
 
 <!--Script references. -->
