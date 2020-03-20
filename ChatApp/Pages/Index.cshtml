@@ -28,3 +28,72 @@
 </div>
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/chat.js"></script>
+
+<div class="text-center">
+    <canvas id="grid"></canvas>
+
+    <script>//creating a function that will draw a grid
+        var drawGrid = function (ctx, w, h) {
+
+            //get width
+            ctx.canvas.width = w;
+            //get height
+            ctx.canvas.height = h;
+
+            //making the grid lines
+            for (x = 0; x <= w; x += 20) {
+                for (y = 0; y <= h; y += 20) {
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, h);
+                    ctx.stroke();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(w, y);
+                    ctx.stroke();
+                }
+            }
+
+        };
+
+        //create canvas
+        var canvas = document.getElementById("grid");
+        //making the canvas something we can write on
+        var ctx = canvas.getContext('2d');
+        //just coming up with some random color
+        var color = Math.floor(Math.random() * 16777215).toString(16);
+        console.log("Color: " + color);
+
+        //now draw the grid
+        drawGrid(ctx, 500, 500);
+
+        //function figuring out where the canvas is clicked
+        function getCursorPosition(canvas, event) {
+            const rect = canvas.getBoundingClientRect()
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            console.log("x: " + x + " y: " + y);
+            getSquare(x, y);
+        }
+
+        //getting the position of the mouse
+        canvas = document.querySelector('canvas');
+        canvas.addEventListener('mousedown', function (e) {
+            getCursorPosition(canvas, e);
+        })
+
+        //getting all the information needed about this square
+        function getSquare(x, y) {
+            var sqrX = Math.trunc(x / 20);
+            var sqrY = Math.trunc(y / 20);
+            console.log("Square location - x: " + sqrX + " y: " + sqrY);
+
+            var xPart = sqrX * 20;
+            var yPart = sqrY * 20;
+            //console.log("xPart: " + xPart + " yPart: " + yPart);
+            colorSquare(xPart, yPart);
+        }
+
+        //now just fill in the square
+        function colorSquare(x, y) {
+            ctx.fillStyle = ("#" + color);
+            ctx.fillRect(x, y, 20, 20);
+        }</script>
