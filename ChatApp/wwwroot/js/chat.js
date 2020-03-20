@@ -21,7 +21,16 @@ connection.start().then(function () {
 
 document.getElementById("sendButton").addEventListener("click", function (event) {
     var user = document.getElementById("userInput").value;
+
+
+
+
+    /* THIS IS THE VARIABLE WE NEED TO CHANGE TO THE X,Y COORDINATES */
     var message = document.getElementById("messageInput").value;
+    /*****************************************************************/
+
+
+
     connection.invoke("SendMessage", user, message).catch(function (err) {
         return console.error(err.toString());
     });

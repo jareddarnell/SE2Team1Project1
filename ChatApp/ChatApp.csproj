@@ -9,4 +9,7 @@
   <ItemGroup>
     <Folder Include="Hubs\" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Remove="wwwroot\js\chat 2.js" />
+  </ItemGroup>
 </Project>
