@@ -33,6 +33,10 @@
 <asp:HiddenField ID="xcoord" Value="0" runat="server" />
 <asp:HiddenField ID="ycoord" Value="0" runat="server" />
 
+<div class="badge">
+    <input type="button" id="gamePlay" value="Next" onclick="gameMath()" />
+</div>
+
 <div class="text-center">
     <canvas id="grid"></canvas>
 
@@ -64,7 +68,7 @@
         //just coming up with some random color in rgb
         function random_rgba() {
             var o = Math.round, r = Math.random, s = 255;
-            return 'rgb(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ', 0.5)';
+            return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ', 0.5)';
         }
         var color = random_rgba();
         console.log("Color: " + color);
@@ -78,7 +82,7 @@
             const rect = canvas.getBoundingClientRect()
             const relativeX = event.clientX - rect.left;
             const relativeY = event.clientY - rect.top;
-            console.log("Relative Info - X: " + relativeX + " Y: " + relativeY);
+            //console.log("Relative Info - X: " + relativeX + " Y: " + relativeY);
             getSquareInfo(relativeX, relativeY);
         }
 
@@ -128,7 +132,7 @@
             if (gridArray[arraySpot] == undefined) {
                 gridArray[arraySpot] = 1;
                 ctx.fillStyle = (color);
-                ctx.fillRect(sqrX, sqrY, 20, 20);                
+                ctx.fillRect(sqrX, sqrY, 20, 20);
                 console.log("Spot not taken, placing in array space: " + arraySpot);
             } else if (gridArray[arraySpot] == 1) {
                 console.log("Spot : " + arraySpot + " in array is taken, please try again");
@@ -139,10 +143,67 @@
         //TO DO: to add in the math for the game once we can figure out how to pass multiple values in
         //TO DO: add onclick="gameMath()" to button
         function gameMath() {
-            //Any live cell with 2 or 3 neighbors survives
-            //Any dead cell with 3 live neighbors comes to life
-            //Any live cell with 1 or 0 neighbors dies
-            //Any live cell with 4 or more neighbors dies
+
+            //loop through the array first
+            for (var i = 18; i <= 288; i++) {
+                //easier way to track x and y location of cells being searched
+                var x = Math.trunc(i / 17) - 1;
+                var y = (i % 17) - 1;
+                var sqrX = x * 20;
+                var sqrY = y * 20;
+                var count = 0;
+                //console.log("x coord:" + x + " y coord: " + y);
+
+                //will need to check -18 , -17, -16, -1, +1, +16, 17, +18 and if the total = 3 the cell = 1
+                if (gridArray[i - 18] == 1) {
+                    count++;
+                }
+                if (gridArray[i - 17] == 1) {
+                    count++;
+                }
+                if (gridArray[i - 16] == 1) {
+                    count++;
+                }
+                if (gridArray[i - 1] == 1) {
+                    count++;
+                }
+                if (gridArray[i + 1] == 1) {
+                    count++;
+                }
+                if (gridArray[i + 16] == 1) {
+                    count++;
+                }
+                if (gridArray[i + 17] == 1) {
+                    count++;
+                }
+                if (gridArray[i + 18] == 1) {
+                    count++;
+                }
+                //console.log('Space: ' + i + ' has ' + count + ' neighbors');
+
+                if (gridArray[i] == 1) { 
+                    debugger;
+                    //console.log(i + " spot is equal to 1");
+                    if (count >= 4 || count == 0 || count == 1) { //Any live cell with 1 or 0 or greater than 4 neighbors dies
+                        debugger;
+                        gridArray[i] = undefined;
+                        deadColor = 'rgba(255, 255, 255, 0.5)';
+                        ctx.fillStyle = (deadColor);
+                        ctx.fillRect(sqrX, sqrY, 19, 19);
+                    }
+                    //Any live cell with 2 or 3 neighbors survives so we don't need to do anything
+
+                } else if (gridArray[i] == undefined) {//see if any dead with 3 neighbors will come to life
+                    //TO DO: Figure out the random color information
+                    if (count == 3) {
+                        gridArray[i] = 1;
+                        AliveColor = 'rgba(0,0,0,0.5';
+                        ctx.fillStyle = (AliveColor);
+                        ctx.fillRect(sqrX, sqrY, 20, 20);
+                    }
+
+                }
+            }
 
         }
 
