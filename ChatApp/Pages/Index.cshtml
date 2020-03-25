@@ -106,17 +106,19 @@
         }
 
         //making an array for the canvas
-        var gridArray = new Array(254);
-        //setting all the top edges
-        gridArray[0, 17, 34, 51, 68, 85, 102, 119, 136, 153, 170, 187, 204, 221, 238] = 0;
-        gridArray[16, 33, 50, 67, 84, 101, 118, 135, 152, 169, 186, 203, 220, 237, 254] = 0;
+        var gridArray = new Array(288);
+        //setting all the edges seperately cause gd this is long
+        gridArray[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16] = 0;
+        gridArray[17, 34, 51, 68, 85, 102, 119, 136, 153, 170, 187, 204, 221, 238, 255] = 0;
+        gridArray[272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288] = 0;
+        gridArray[33, 50, 67, 84, 101, 118, 135, 152, 169, 186, 203, 220, 237, 254, 271] = 0;
 
         //now add the item to the array
         function addToArray(x, y, sqrX, sqrY) {
 
             //determine where the actual place in the array this will be stored
             var arraySpot;
-            arraySpot = (x * 17) + (y + 1);
+            arraySpot = ((x + 1) * 17) + (y + 1);
 
             //testing help
             //console.log("Array Spot: " + arraySpot);
