@@ -58,8 +58,13 @@
         var canvas = document.getElementById("grid");
         //making the canvas something we can write on
         var ctx = canvas.getContext('2d');
-        //just coming up with some random color
-        var color = Math.floor(Math.random() * 16777215).toString(16);
+        //just coming up with some random color in rgb
+        function random_rgba() {
+            var o = Math.round, r = Math.random, s = 255;
+            return 'rgb(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ', 0.5)';
+        }
+
+        var color = random_rgba();
         console.log("Color: " + color);
 
         //now draw the grid
@@ -94,8 +99,9 @@
 
         //now just fill in the square
         function colorSquare(sqrX, sqrY) {
-            ctx.fillStyle = ("#" + color);
+            ctx.fillStyle = (color);
             ctx.fillRect(sqrX, sqrY, 20, 20);
-        }</script>
-    }
-}
+        }
+    </script>
+    
+</div>
