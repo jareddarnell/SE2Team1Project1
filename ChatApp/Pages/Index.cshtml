@@ -37,14 +37,12 @@
     <canvas id="grid"></canvas>
 
     <script>
-    //creating a function that will draw a grid
+        //creating a function that will draw a grid
         var drawGrid = function (ctx, w, h) {
-
             //get width
             ctx.canvas.width = w;
             //get height
             ctx.canvas.height = h;
-
             //making the grid lines
             for (x = 0; x <= w; x += 20) {
                 for (y = 0; y <= h; y += 20) {
@@ -56,25 +54,24 @@
                     ctx.stroke();
                 }
             }
-
         };
 
         //create canvas
         var canvas = document.getElementById("grid");
         //making the canvas something we can write on
         var ctx = canvas.getContext('2d');
+
         //just coming up with some random color in rgb
         function random_rgba() {
             var o = Math.round, r = Math.random, s = 255;
-            return 'rgb(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ', 0.5)';
+            return 'rgb(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ', 0.5)';
         }
-
         var color = random_rgba();
         console.log("Color: " + color);
         document.getElementById("color").value = color; //Assigns color to hidden field
 
         //now draw the grid
-        drawGrid(ctx, 500, 500);
+        drawGrid(ctx, 300, 300);
 
         //function figuring out where the canvas is clicked
         function getCursorPosition(canvas, event) {
@@ -82,7 +79,7 @@
             const relativeX = event.clientX - rect.left;
             const relativeY = event.clientY - rect.top;
             console.log("Relative Info - X: " + relativeX + " Y: " + relativeY);
-            getSquare(relativeX, relativeY);
+            getSquareInfo(relativeX, relativeY);
         }
 
         //getting the position of the mouse
@@ -92,25 +89,60 @@
         })
 
         //getting all the information needed about this square
-        function getSquare(relativeX, relativeY) {
+        function getSquareInfo(relativeX, relativeY) {
+
+            //getting basic info of the square clicked
             var x = Math.trunc(relativeX / 20);
             var y = Math.trunc(relativeY / 20);
-            console.log("Info To Pass - X:" + x + " Y:" + y);
+            var sqrX = x * 20;
+            var sqrY = y * 20;
 
             //Assigns hidden values for passing to server
             document.getElementById("xcoord").value = x;
             document.getElementById("ycoord").value = y;
 
-            var sqrX = x * 20;
-            var sqrY = y * 20;
-            //console.log("Square Mark -  X:" + sqrX + " Y:" + sqrY);
-            colorSquare(sqrX, sqrY);
+            console.log("Info To Pass - X:" + x + " Y:" + y);
+            addToArray(x, y, sqrX, sqrY);
         }
 
-        //now just fill in the square
-        function colorSquare(sqrX, sqrY) {
-            ctx.fillStyle = (color);
-            ctx.fillRect(sqrX, sqrY, 20, 20);
-        }</script>
-    }
-}
+        //making an array for the canvas
+        var gridArray = new Array(254);
+        //setting all the top edges
+        gridArray[0, 17, 34, 51, 68, 85, 102, 119, 136, 153, 170, 187, 204, 221, 238] = 0;
+        gridArray[16, 33, 50, 67, 84, 101, 118, 135, 152, 169, 186, 203, 220, 237, 254] = 0;
+
+        //now add the item to the array
+        function addToArray(x, y, sqrX, sqrY) {
+
+            //determine where the actual place in the array this will be stored
+            var arraySpot;
+            arraySpot = (x * 17) + (y + 1);
+
+            //testing help
+            //console.log("Array Spot: " + arraySpot);
+            //console.log("Currently in spot: " + gridArray[arraySpot]);
+
+            //now place info inside array (undefined = empty, 1 = live, 0 = end space)
+            if (gridArray[arraySpot] == undefined) {
+                gridArray[arraySpot] = 1;
+                ctx.fillStyle = (color);
+                ctx.fillRect(sqrX, sqrY, 20, 20);                
+                console.log("Spot not taken, placing in array space: " + arraySpot);
+            } else if (gridArray[arraySpot] == 1) {
+                console.log("Spot : " + arraySpot + " in array is taken, please try again");
+            }
+
+        }
+
+        //TO DO: to add in the math for the game once we can figure out how to pass multiple values in
+        //TO DO: add onclick="gameMath()" to button
+        function gameMath() {
+            //Any live cell with 2 or 3 neighbors survives
+            //Any dead cell with 3 live neighbors comes to life
+            //Any live cell with 1 or 0 neighbors dies
+            //Any live cell with 4 or more neighbors dies
+
+        }
+
+    </script>
+</div>
