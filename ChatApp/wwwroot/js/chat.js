@@ -19,19 +19,20 @@ connection.start().then(function () {
     return console.error(err.toString());
 });
 
-document.getElementById("sendButton").addEventListener("click", function (event) {
-    var user = document.getElementById("userInput").value;
+document.getElementById("grid").addEventListener("click", function (event) {
+    var color = document.getElementById("color").value;
 
 
 
 
     /* THIS IS THE VARIABLE WE NEED TO CHANGE TO THE X,Y COORDINATES */
-    var message = document.getElementById("messageInput").value;
+    var xcoord = document.getElementById("xcoord").value;
+    var ycoord = document.getElementById("ycoord").value;
     /*****************************************************************/
 
 
 
-    connection.invoke("SendMessage", user, message).catch(function (err) {
+    connection.invoke("SendMessage", color, xcoord, ycoord).catch(function (err) {
         return console.error(err.toString());
     });
     event.preventDefault();
