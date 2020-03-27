@@ -1,37 +1,11 @@
 ﻿@page
-<div class="container">
-    <div class="row">&nbsp;</div>
-    <div class="row">
-        <div class="col-2">User</div>
-        <div class="col-4"><input type="text" id="userInput" /></div>
-    </div>
-    <div class="row">
-        <div class="col-2">Message</div>
-        <div class="col-4"><input type="text" id="messageInput" /></div>
-    </div>
-    <div class="row">&nbsp;</div>
-    <div class="row">
-        <div class="col-6">
-            <input type="button" id="sendButton" value="Send Message" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-12">
-        <hr />
-    </div>
-</div>
-<div class="row">
-    <div class="col-6">
-        <ul id="messagesList"></ul>
-    </div>
-</div>
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/chat.js"></script>
 
 <asp:HiddenField ID="color" Value="0" runat="server" /> <!--Hidden field for color (use is for passing to server)-->
-<asp:HiddenField ID="xcoord" Value="0" runat="server" />
-<asp:HiddenField ID="ycoord" Value="0" runat="server" />
+<asp:HiddenField ID="remoteColor" Value="0" runat="server" />
+<asp:HiddenField ID="gridArray" Value="0" runat="server" />
+<asp:HiddenField ID="remoteGridArray" Value="0" runat="server" />
 
 <div class="badge">
     <input type="button" id="gamePlay" value="Next" onclick="gameMath()" />
@@ -101,10 +75,6 @@
             var sqrX = (x * 20) + 1;
             var sqrY = (y * 20) + 1;
 
-            //Assigns hidden values for passing to server
-            document.getElementById("xcoord").value = x;
-            document.getElementById("ycoord").value = y;
-
             console.log("Info To Pass - X:" + x + " Y:" + y);
             console.log("Square X: " + sqrX + " Y:" + sqrY);
             addToArray(x, y, sqrX, sqrY);
@@ -135,6 +105,9 @@
                 ctx.fillStyle = (color);
                 ctx.fillRect(sqrX, sqrY, 18, 18);
                 console.log("Spot not taken, placing in array space: " + arraySpot);
+
+                document.getElementById("gridArray").value = gridArray;
+
             } else if (gridArray[arraySpot] == 1) {
                 console.log("Spot : " + arraySpot + " in array is taken, please try again");
             }

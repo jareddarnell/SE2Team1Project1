@@ -1,38 +1,28 @@
 ﻿"use strict";
 
-var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+//var connection = new signalR.HubConnectionBuilder().withUrl("http://students.cs.weber.edu/Group123/chatHub").build(); // Server setting
+var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build(); //local setting
 
 //Disable send button until connection is established
-document.getElementById("sendButton").disabled = true;
+document.getElementById("grid").disabled = true;
 
-connection.on("ReceiveMessage", function (user, message) {
-    var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    var encodedMsg = user + " says " + msg;
-    var li = document.createElement("li");
-    li.textContent = encodedMsg;
-    document.getElementById("messagesList").appendChild(li);
+connection.on("ReceiveMessage", function (color, gridArray) {
+    document.getElementById("remoteGridArray").value = gridArray;
+    document.getElementById("remoteColor").value = color;
 });
 
 connection.start().then(function () {
-    document.getElementById("sendButton").disabled = false;
+    document.getElementById("grid").disabled = false;
 }).catch(function (err) {
     return console.error(err.toString());
 });
 
 document.getElementById("grid").addEventListener("click", function (event) {
     var color = document.getElementById("color").value;
+    var gridArray = document.getElementById("gridArray").value;
 
 
-
-
-    /* THIS IS THE VARIABLE WE NEED TO CHANGE TO THE X,Y COORDINATES */
-    var xcoord = document.getElementById("xcoord").value;
-    var ycoord = document.getElementById("ycoord").value;
-    /*****************************************************************/
-
-
-
-    connection.invoke("SendMessage", color, xcoord, ycoord).catch(function (err) {
+    connection.invoke("SendMessage", color, gridArray).catch(function (err) {
         return console.error(err.toString());
     });
     event.preventDefault();
