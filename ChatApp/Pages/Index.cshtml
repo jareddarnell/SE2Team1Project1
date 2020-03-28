@@ -1,11 +1,12 @@
 ﻿@page
-<script src="~/js/signalr/dist/browser/signalr.js"></script>
-
-<!---->
+<!--Prob dont even need these-->
 <asp:HiddenField ID="color" Value="0" runat="server" /> <!--Hidden field for color (use is for passing to server)-->
 <asp:HiddenField ID="remoteColor" Value="0" runat="server" />
 <asp:HiddenField ID="gridArray" Value="0" runat="server" />
 <asp:HiddenField ID="remoteGridArray" Value="0" runat="server" />
+<!----------------------------------------------------------------------------------------------------------------->
+
+
 
 <div class="badge">
     <input type="button" id="gamePlay" value="Next" onclick="gameMath()" />
@@ -45,8 +46,8 @@
             return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ', 0.5)';
         }
         var color = random_rgba();
-        console.log("Color: " + color);
-        document.getElementById("color").value = color; //Assigns color to hidden field
+        //console.log("Color: " + color);
+        //document.getElementById("color").value = color; //Assigns color to hidden field
 
         //now draw the grid
         drawGrid(ctx, 300, 300);
@@ -88,10 +89,21 @@
         gridArray[272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288] = 0;
         gridArray[33, 50, 67, 84, 101, 118, 135, 152, 169, 186, 203, 220, 237, 254, 271] = 0;
 
-        //now add the item to the array
+
+        // Try to make an object array to send the game board + the player's color
+        var playerGameBoard = [
+            {
+                playersColor: color,
+                gameBoard: gridArray
+            }
+        ];
+        
+        
+
+        // now add the item to the array
         function addToArray(x, y, sqrX, sqrY) {
 
-            //determine where the actual place in the array this will be stored
+            // determine where the actual place in the array this will be stored
             var arraySpot;
             arraySpot = ((x + 1) * 17) + (y + 1);
 
@@ -99,11 +111,19 @@
             //console.log("Array Spot: " + arraySpot);
             //console.log("Currently in spot: " + gridArray[arraySpot]);
 
-            //now place info inside array (undefined = empty, 1 = live, 0 = end space)
+            // now place info inside array (undefined = empty, 1 = live, 0 = end space)
             if (gridArray[arraySpot] == undefined) {
+                
                 gridArray[arraySpot] = 1;
                 ctx.fillStyle = (color);
                 ctx.fillRect(sqrX, sqrY, 18, 18);
+
+                //  Print out the players color
+                console.log("Players color is: " + playerGameBoard[0].playersColor);
+
+                // Print out the players game board
+                console.log("Player (" + playerGameBoard[0].playersColor + ")'s game board is: " + playerGameBoard[0].gameBoard);
+
                 console.log("Spot not taken, placing in array space: " + arraySpot);
 
                 document.getElementById("gridArray").value = gridArray;
@@ -113,6 +133,7 @@
             }
 
         }
+        
 
         //this function will run the entire game
         function gameMath() {
@@ -189,4 +210,5 @@
 
     </script>
 </div>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/chat.js"></script>    

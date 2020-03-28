@@ -5,9 +5,9 @@ namespace SignalRChat.Hubs
 {
     public class ChatHub : Hub
     {
-        public async Task SendMessage(string color, int?[] gridArray)
+        public async Task SendMessage(string color, object[] playerGameBoard)
         {
-            await Clients.All.SendAsync("ReceiveMessage", color, gridArray);
+            await Clients.All.SendAsync("ReceiveMessage", color, playerGameBoard);
         }
     }
 }

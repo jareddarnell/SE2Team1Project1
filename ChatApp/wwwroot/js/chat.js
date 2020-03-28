@@ -3,15 +3,9 @@
 //var connection = new signalR.HubConnectionBuilder().withUrl("http://students.cs.weber.edu/Group123/chatHub").build(); // Server setting
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build(); //local setting
 
-//Disable send button until connection is established
-//document.getElementById("grid").disabled = true;
 
-connection.on("ReceiveMessage", function (color, arr) {
-    console.log("receiveMessage")
-    //document.getElementById("remoteGridArray").value = gridArray;
-    //document.getElementById("remoteColor").value = color;
-    gridArray = arr;
-    //gameMath();
+connection.on("ReceiveMessage", function (playerGameBoard) {
+    console.log("receiveMessage from the connection in chat.js")
 });
 
 connection.start().then(function () {
@@ -24,7 +18,7 @@ connection.start().then(function () {
 
 
 document.getElementById("grid").addEventListener("click", function (event) {
-    console.log("Click");
+    console.log("Click from the event listener in chat.js");
     var color = document.getElementById("color").value;
     //var gridArray = document.getElementById("gridArray").value;
 
@@ -39,17 +33,6 @@ document.getElementById("grid").addEventListener("click", function (event) {
 
 
 // Possible new schema
-/*
-
-var arr = [
-    {
-        color: '',
-        value: 0
-    },
-]
-
-*/
-
 
 /*
 
