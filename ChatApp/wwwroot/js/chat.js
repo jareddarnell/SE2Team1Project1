@@ -4,8 +4,12 @@
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build(); //local setting
 
 
-connection.on("ReceiveMessage", function (playerGameBoard) {
-    console.log("receiveMessage from the connection in chat.js")
+connection.on("ReceiveMessage", function (color, playerGameBoard) {
+    console.log("receiveMessage from the connection in chat.js");
+    console.log(color);
+    console.log(playerGameBoard);
+    gridArray = playerGameBoard;
+    reRender();
 });
 
 connection.start().then(function () {
@@ -19,26 +23,20 @@ connection.start().then(function () {
 
 document.getElementById("grid").addEventListener("click", function (event) {
     console.log("Click from the event listener in chat.js");
-    var color = document.getElementById("color").value;
-    //var gridArray = document.getElementById("gridArray").value;
+    //var color = document.getElementById("color").value;
 
-    
     connection.invoke("SendMessage", color, gridArray).catch(function (err) {
         return console.error(err);
     });
     event.preventDefault();
 });
 
+//document.getElementById("gamePlay").addEventListener("click", function (event) {
+//    console.log("Click from the event listener in chat.js");
+//    //var color = document.getElementById("color").value;
 
-
-
-// Possible new schema
-
-/*
-
-2 things:
-
- * Some way of storing color for each cell + alive dead state (maybe an array of objects instead of an array of numbers)
- * A way of just completely re-rendering the whole board when you receive a new board state from signal R 
-
-*/
+    //connection.invoke("SendMessage", color, gridArray).catch(function (err) {
+    //    return console.error(err);
+    //});
+//    event.preventDefault();
+//});

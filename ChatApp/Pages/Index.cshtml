@@ -1,12 +1,5 @@
 ﻿@page
-<!--Prob dont even need these-->
-<asp:HiddenField ID="color" Value="0" runat="server" /> <!--Hidden field for color (use is for passing to server)-->
-<asp:HiddenField ID="remoteColor" Value="0" runat="server" />
-<asp:HiddenField ID="gridArray" Value="0" runat="server" />
-<asp:HiddenField ID="remoteGridArray" Value="0" runat="server" />
-<!----------------------------------------------------------------------------------------------------------------->
-
-
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
 
 <div class="badge">
     <input type="button" id="gamePlay" value="Next" onclick="gameMath()" />
@@ -15,8 +8,11 @@
 <div class="text-center">
     <canvas id="grid"></canvas>
 
-    <script>
-        //creating a function that will draw a grid
+    <script>// GLOBAL FEATURES /////////////////////////////////////////////////////////////////////////////
+
+        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build(); //local setting
+
+        // ORIGINAL GAME GRID
         var drawGrid = function (ctx, w, h) {
             //get width
             ctx.canvas.width = w;
@@ -33,41 +29,52 @@
                     ctx.stroke();
                 }
             }
-        };
+        };// end of drawGrid
 
-        //create canvas
+        // CANVAS
         var canvas = document.getElementById("grid");
         //making the canvas something we can write on
         var ctx = canvas.getContext('2d');
 
-        //just coming up with some random color in rgb
+        // PLAYERS COLOR
         function random_rgba() {
             var o = Math.round, r = Math.random, s = 255;
             return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ', 0.5)';
         }
         var color = random_rgba();
-        //console.log("Color: " + color);
-        //document.getElementById("color").value = color; //Assigns color to hidden field
 
-        //now draw the grid
+        // GAME GRID
         drawGrid(ctx, 300, 300);
 
-        //function figuring out where the canvas is clicked
+        // GAME GRID ARRAY
+        var gridArray = new Array(288);
+        //setting all the edges seperately cause gd this is long
+        gridArray[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16] = { color: '', value: 0, coords: null };
+        gridArray[17, 34, 51, 68, 85, 102, 119, 136, 153, 170, 187, 204, 221, 238, 255] = { color: '', value: 0, coords: null };
+        gridArray[272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288] = { color: '', value: 0, coords: null };
+        gridArray[33, 50, 67, 84, 101, 118, 135, 152, 169, 186, 203, 220, 237, 254, 271] = { color: '', value: 0, coords: null };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+        // function figuring out where the canvas is clicked
         function getCursorPosition(canvas, event) {
             const rect = canvas.getBoundingClientRect()
             const relativeX = event.clientX - rect.left;
             const relativeY = event.clientY - rect.top;
             //console.log("Relative Info - X: " + relativeX + " Y: " + relativeY);
             getSquareInfo(relativeX, relativeY);
-        }
+        }// end of getCoursorPosition()
 
-        //getting the position of the mouse
+
+        // getting the position of the mouse
         canvas = document.querySelector('canvas');
         canvas.addEventListener('mousedown', function (e) {
             getCursorPosition(canvas, e);
         })
 
-        //getting all the information needed about this square
+        // getting all the information needed about this square
         function getSquareInfo(relativeX, relativeY) {
 
             //getting basic info of the square clicked
@@ -81,134 +88,131 @@
             addToArray(x, y, sqrX, sqrY);
         }
 
-        //making an array for the canvas
-        var gridArray = new Array(288);
-        //setting all the edges seperately cause gd this is long
-        gridArray[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16] = 0;
-        gridArray[17, 34, 51, 68, 85, 102, 119, 136, 153, 170, 187, 204, 221, 238, 255] = 0;
-        gridArray[272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288] = 0;
-        gridArray[33, 50, 67, 84, 101, 118, 135, 152, 169, 186, 203, 220, 237, 254, 271] = 0;
-
-
-        // Try to make an object array to send the game board + the player's color
-        var playerGameBoard = [
-            {
-                playersColor: color,
-                gameBoard: gridArray
-            }
-        ];
-        
-        
-
         // now add the item to the array
-        function addToArray(x, y, sqrX, sqrY) {
+        function addToArray(x, y, sqrX, sqrY, c = color) {
 
             // determine where the actual place in the array this will be stored
             var arraySpot;
             arraySpot = ((x + 1) * 17) + (y + 1);
 
-            //testing help
-            //console.log("Array Spot: " + arraySpot);
-            //console.log("Currently in spot: " + gridArray[arraySpot]);
-
             // now place info inside array (undefined = empty, 1 = live, 0 = end space)
-            if (gridArray[arraySpot] == undefined) {
-                
-                gridArray[arraySpot] = 1;
-                ctx.fillStyle = (color);
-                ctx.fillRect(sqrX, sqrY, 18, 18);
+            //if (!gridArray[arraySpot]) {
 
-                //  Print out the players color
-                console.log("Players color is: " + playerGameBoard[0].playersColor);
+            gridArray[arraySpot] = {};
+            gridArray[arraySpot].value = 1;
+            gridArray[arraySpot].color = c;
+            gridArray[arraySpot].coords = { x, y, sqrX, sqrY };
+            ctx.clearRect(sqrX, sqrY, 18, 18);
+            ctx.fillStyle = (c);
+            ctx.fillRect(sqrX, sqrY, 18, 18);
 
-                // Print out the players game board
-                console.log("Player (" + playerGameBoard[0].playersColor + ")'s game board is: " + playerGameBoard[0].gameBoard);
+            // Print out the players color
+            //console.log("Players color is: " + playerGameBoard[0].playersColor);
 
-                console.log("Spot not taken, placing in array space: " + arraySpot);
+            //// Print out the players game board
+            //console.log("Player (" + playerGameBoard[0].playersColor + ")'s game board is: " + playerGameBoard[0].gameBoard);
 
-                document.getElementById("gridArray").value = gridArray;
+            //console.log("Spot not taken, placing in array space: " + arraySpot);
 
-            } else if (gridArray[arraySpot] == 1) {
-                console.log("Spot : " + arraySpot + " in array is taken, please try again");
+            //} else if (gridArray[arraySpot].value == 1) {
+            //    console.log("Spot : " + arraySpot + " in array is taken, please try again");
+            //}
+
+        }// end addToArray()
+
+        function reRender() {
+            for (var i = 0; i < gridArray.length; i++) {
+
+                if (gridArray[i] && gridArray[i].coords) {
+                    addToArray(gridArray[i].coords.x, gridArray[i].coords.y, gridArray[i].coords.sqrX, gridArray[i].coords.sqrY, gridArray[i].color);
+                }
+
             }
-
         }
-        
 
-        //this function will run the entire game
+
+        // this function will run the entire game
         function gameMath() {
 
-            //loop through the array first
+            // loop through the array first
             for (var i = 18; i <= 271; i++) {
 
-                //easier way to track x and y location of cells being searched
+                // easier way to track x and y location of cells being searched
                 var x = Math.trunc(i / 17) - 1;
                 var y = (i % 17) - 1;
                 var sqrX = (x * 20) + 1;
                 var sqrY = (y * 20) + 1;
                 var count = 0;
-                //console.log("x coord:" + x + " y coord: " + y);
 
-                //will need to check -18 , -17, -16, -1, +1, +16, 17, +18 and if the total = 3 the cell = 1
-                if (gridArray[i - 18] == 1 || gridArray[i - 18] == 3) {
+                // will need to check -18 , -17, -16, -1, +1, +16, 17, +18 and if the total = 3 the cell = 1
+                if (gridArray[i - 18] && (gridArray[i - 18].value == 1 || gridArray[i - 18].value == 3)) {
                     count++;
                 }
-                if (gridArray[i - 17] == 1 || gridArray[i - 17] == 3) {
+                if (gridArray[i - 17] && (gridArray[i - 17].value == 1 || gridArray[i - 17].value == 3)) {
                     count++;
                 }
-                if (gridArray[i - 16] == 1 || gridArray[i - 16] == 3) {
+                if (gridArray[i - 16] && (gridArray[i - 16].value == 1 || gridArray[i - 16].value == 3)) {
                     count++;
                 }
-                if (gridArray[i - 1] == 1  || gridArray[i - 1] == 3) {
+                if (gridArray[i - 1] && (gridArray[i - 1].value == 1 || gridArray[i - 1].value == 3)) {
                     count++;
                 }
-                if (gridArray[i + 1] == 1  || gridArray[i + 1] == 3) {
+                if (gridArray[i + 1] && (gridArray[i + 1].value == 1 || gridArray[i + 1].value == 3)) {
                     count++;
                 }
-                if (gridArray[i + 16] == 1 || gridArray[i + 16] == 3) {
+                if (gridArray[i + 16] && (gridArray[i + 16].value == 1 || gridArray[i + 16].value == 3)) {
                     count++;
                 }
-                if (gridArray[i + 17] == 1 || gridArray[i + 17] == 3) {
+                if (gridArray[i + 17] && (gridArray[i + 17].value == 1 || gridArray[i + 17].value == 3)) {
                     count++;
                 }
-                if (gridArray[i + 18] == 1 || gridArray[i + 18] == 3) {
+                if (gridArray[i + 18] && (gridArray[i + 18].value == 1 || gridArray[i + 18].value == 3)) {
                     count++;
                 }
-                console.log('Space: ' + i + ' has ' + count + ' neighbors');
+                //console.log('Space: ' + i + ' has ' + count + ' neighbors');
 
-                //Any live cell with 1 or 0 or greater than 4 neighbors dies (2 or 3 3 neighbors live)
-                if (gridArray[i] == 1) { 
- 
-                    if (count >= 4 || count == 0 || count == 1) { 
-                        gridArray[i] = 3; //3 is just a temporary value for going to die
+                // Any live cell with 1 or 0 or greater than 4 neighbors dies (2 or 3 3 neighbors live)
+                if (gridArray[i]) {
+
+                    if (count >= 4 || count == 0 || count == 1) {
+                        console.log("DEAD COLOR!!!");
+                        gridArray[i] = {};
+                        gridArray[i].value = 3; //3 is just a temporary value for going to die
                         deadColor = 'rgb(255, 255, 255)';
+                        gridArray[i].color = deadColor;
+                        gridArray[i].coords = { x, y, sqrX, sqrY };
                         ctx.fillStyle = (deadColor);
                         ctx.fillRect(sqrX, sqrY, 18, 18);
                     }
                 }
-                //see if any dead with 3 neighbors will come to life
-                else if (gridArray[i] == undefined) {
-                    //TO DO: Figure out the random color information
+                // see if any dead with 3 neighbors will come to life
+                else if (!gridArray[i]) {
+                    // TO DO: Figure out the random color information
                     if (count == 3) {
-                        gridArray[i] = 4; //4 will just be a temporary value for going to come to life
+                        gridArray[i] = {};
+                        gridArray[i].value = 4; // 4 will just be a temporary value for going to come to life
                         AliveColor = 'rgba(0,0,0,0.5)';
+                        gridArray[i].color = AliveColor;
+                        gridArray[i].coords = { x, y, sqrX, sqrY };
                         ctx.fillStyle = (AliveColor);
                         ctx.fillRect(sqrX, sqrY, 20, 20);
                     }
                 }
             }
 
-            //now change everything to their normal numbers 3-> undefined and 4->1
+            // now change everything to their normal numbers 3-> undefined and 4->1
             for (var i = 18; i <= 271; i++) {
-                if (gridArray[i] == 3) {
-                    gridArray[i] = undefined;
-                } else if (gridArray[i] == 4) {
-                    gridArray[i] = 1;
+                if (gridArray[i] && gridArray[i].value == 3) {
+                    gridArray[i] = null;
+                } else if (gridArray[i] && gridArray[i].value == 4) {
+                    gridArray[i].value = 1;
                 }
             }
-        }
 
+            connection.invoke("SendMessage", color, gridArray).catch(function (err) {
+                return console.error(err);
+            });
+        }// end gameMath()
     </script>
 </div>
-<script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/chat.js"></script>    
