@@ -2,7 +2,7 @@
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 
 <div class="badge">
-    <input type="button" id="gamePlay" value="Next" onclick="gameMath()" />
+    <input type="button" id="gamePlay" value="Next"/>
 </div>
 
 <div class="text-center">
@@ -39,9 +39,16 @@
         // PLAYERS COLOR
         function random_rgba() {
             var o = Math.round, r = Math.random, s = 255;
-            return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ', 0.5)';
+            return 'rgb(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ')';
         }
         var color = random_rgba();
+
+        //Stolen from https://stackoverflow.com/questions/10970958/get-a-color-component-from-an-rgb-string-in-javascript
+        function rgb_parser(rgb)
+        {
+            rgb = rgb.substring(4, rgb.length-1).replace(/ /g, '').split(',');
+            return rgb;
+        }
 
         // GAME GRID
         drawGrid(ctx, 300, 300);
@@ -188,6 +195,7 @@
                 // see if any dead with 3 neighbors will come to life
                 else if (!gridArray[i]) {
                     // TO DO: Figure out the random color information
+                    //AVERAGE COLOR GOES IN HERE SOMEWHERE
                     if (count == 3) {
                         gridArray[i] = {};
                         gridArray[i].value = 4; // 4 will just be a temporary value for going to come to life

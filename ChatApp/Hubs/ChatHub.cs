@@ -9,5 +9,10 @@ namespace SignalRChat.Hubs
         {
             await Clients.All.SendAsync("ReceiveMessage", color, playerGameBoard);
         }
+
+        public async Task SendMath()
+        {
+            await Clients.All.SendAsync("ReceiveMath");
+        }
     }
 }
