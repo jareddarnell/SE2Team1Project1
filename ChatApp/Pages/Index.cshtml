@@ -70,7 +70,7 @@
             const rect = canvas.getBoundingClientRect()
             const relativeX = event.clientX - rect.left;
             const relativeY = event.clientY - rect.top;
-            //console.log("Relative Info - X: " + relativeX + " Y: " + relativeY);
+
             getSquareInfo(relativeX, relativeY);
         }// end of getCoursorPosition()
 
@@ -89,21 +89,37 @@
             var y = Math.trunc(relativeY / 20);
             var sqrX = (x * 20) + 1;
             var sqrY = (y * 20) + 1;
-
-            console.log("Info To Pass - X:" + x + " Y:" + y);
-            console.log("Square X: " + sqrX + " Y:" + sqrY);
             addToArray(x, y, sqrX, sqrY);
         }
 
         // now add the item to the array
         function addToArray(x, y, sqrX, sqrY, c = color) {
-
             // determine where the actual place in the array this will be stored
             var arraySpot;
             arraySpot = ((x + 1) * 17) + (y + 1);
 
+            
+
             // now place info inside array (undefined = empty, 1 = live, 0 = end space)
-            //if (!gridArray[arraySpot]) {
+            if (!gridArray[arraySpot]) {
+                gridArray[arraySpot] = {};
+                gridArray[arraySpot].value = 1;
+                gridArray[arraySpot].color = c;
+                gridArray[arraySpot].coords = { x, y, sqrX, sqrY };
+                ctx.clearRect(sqrX, sqrY, 18, 18);
+                ctx.fillStyle = (c);
+                ctx.fillRect(sqrX, sqrY, 18, 18);
+
+            } else if (gridArray[arraySpot].value == 1 && gridArray[arraySpot].color == color) {
+                gridArray[arraySpot] = undefined;
+                ctx.clearRect(sqrX, sqrY, 18, 18);
+            }
+
+        }// end addToArray()
+
+        function renderCell(x, y, sqrX, sqrY, c = color) {
+            var arraySpot;
+            arraySpot = ((x + 1) * 17) + (y + 1);
 
             gridArray[arraySpot] = {};
             gridArray[arraySpot].value = 1;
@@ -112,26 +128,14 @@
             ctx.clearRect(sqrX, sqrY, 18, 18);
             ctx.fillStyle = (c);
             ctx.fillRect(sqrX, sqrY, 18, 18);
+        }
 
-            // Print out the players color
-            //console.log("Players color is: " + playerGameBoard[0].playersColor);
-
-            //// Print out the players game board
-            //console.log("Player (" + playerGameBoard[0].playersColor + ")'s game board is: " + playerGameBoard[0].gameBoard);
-
-            //console.log("Spot not taken, placing in array space: " + arraySpot);
-
-            //} else if (gridArray[arraySpot].value == 1) {
-            //    console.log("Spot : " + arraySpot + " in array is taken, please try again");
-            //}
-
-        }// end addToArray()
 
         function reRender() {
             for (var i = 0; i < gridArray.length; i++) {
 
                 if (gridArray[i] && gridArray[i].coords) {
-                    addToArray(gridArray[i].coords.x, gridArray[i].coords.y, gridArray[i].coords.sqrX, gridArray[i].coords.sqrY, gridArray[i].color);
+                    renderCell(gridArray[i].coords.x, gridArray[i].coords.y, gridArray[i].coords.sqrX, gridArray[i].coords.sqrY, gridArray[i].color);
                 }
 
             }
@@ -176,13 +180,11 @@
                 if (gridArray[i + 18] && (gridArray[i + 18].value == 1 || gridArray[i + 18].value == 3)) {
                     count++;
                 }
-                //console.log('Space: ' + i + ' has ' + count + ' neighbors');
 
                 // Any live cell with 1 or 0 or greater than 4 neighbors dies (2 or 3 3 neighbors live)
                 if (gridArray[i]) {
 
                     if (count >= 4 || count == 0 || count == 1) {
-                        console.log("DEAD COLOR!!!");
                         gridArray[i] = {};
                         gridArray[i].value = 3; //3 is just a temporary value for going to die
                         deadColor = 'rgb(255, 255, 255)';
