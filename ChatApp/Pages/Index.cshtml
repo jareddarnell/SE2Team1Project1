@@ -51,15 +51,15 @@
         }
 
         // GAME GRID
-        drawGrid(ctx, 300, 300);
+        drawGrid(ctx, 320, 320);
 
         // GAME GRID ARRAY
-        var gridArray = new Array(288);
+        var gridArray = new Array(323);
         //setting all the edges seperately cause gd this is long
-        gridArray[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16] = { color: '', value: 0, coords: null };
-        gridArray[17, 34, 51, 68, 85, 102, 119, 136, 153, 170, 187, 204, 221, 238, 255] = { color: '', value: 0, coords: null };
-        gridArray[272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288] = { color: '', value: 0, coords: null };
-        gridArray[33, 50, 67, 84, 101, 118, 135, 152, 169, 186, 203, 220, 237, 254, 271] = { color: '', value: 0, coords: null };
+        gridArray[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17] = { color: '', value: 0, coords: null };
+        gridArray[18, 36, 54, 72, 90, 108, 126, 144, 162, 180, 198, 216, 234, 252, 270, 288] = { color: '', value: 0, coords: null };
+        gridArray[35, 53, 71, 89, 107, 125, 143, 161, 179, 197, 215, 233, 251, 269, 287, 305] = { color: '', value: 0, coords: null };
+        gridArray[306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323] = { color: '', value: 0, coords: null };
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -89,6 +89,7 @@
             var y = Math.trunc(relativeY / 20);
             var sqrX = (x * 20) + 1;
             var sqrY = (y * 20) + 1;
+            console.log("Square Info - X:" + x + " Y:" + y);
             addToArray(x, y, sqrX, sqrY);
         }
 
@@ -96,7 +97,7 @@
         function addToArray(x, y, sqrX, sqrY, c = color) {
             // determine where the actual place in the array this will be stored
             var arraySpot;
-            arraySpot = ((x + 1) * 17) + (y + 1);
+            arraySpot = ((x + 1) * 18) + (y + 1);
 
             
 
@@ -119,7 +120,7 @@
 
         function renderCell(x, y, sqrX, sqrY, c = color) {
             var arraySpot;
-            arraySpot = ((x + 1) * 17) + (y + 1);
+            arraySpot = ((x + 1) * 18) + (y + 1);
 
             gridArray[arraySpot] = {};
             gridArray[arraySpot].value = 1;
@@ -146,23 +147,23 @@
         function gameMath() {
 
             // loop through the array first
-            for (var i = 18; i <= 271; i++) {
+            for (var i = 19; i <= 304; i++) {
 
                 // easier way to track x and y location of cells being searched
-                var x = Math.trunc(i / 17) - 1;
-                var y = (i % 17) - 1;
+                var x = Math.trunc(i / 18) - 1;
+                var y = (i % 18) - 1;
                 var sqrX = (x * 20) + 1;
                 var sqrY = (y * 20) + 1;
                 var count = 0;
 
                 // will need to check -18 , -17, -16, -1, +1, +16, 17, +18 and if the total = 3 the cell = 1
+                if (gridArray[i - 19] && (gridArray[i - 19].value == 1 || gridArray[i - 19].value == 3)) {
+                    count++;
+                }
                 if (gridArray[i - 18] && (gridArray[i - 18].value == 1 || gridArray[i - 18].value == 3)) {
                     count++;
                 }
                 if (gridArray[i - 17] && (gridArray[i - 17].value == 1 || gridArray[i - 17].value == 3)) {
-                    count++;
-                }
-                if (gridArray[i - 16] && (gridArray[i - 16].value == 1 || gridArray[i - 16].value == 3)) {
                     count++;
                 }
                 if (gridArray[i - 1] && (gridArray[i - 1].value == 1 || gridArray[i - 1].value == 3)) {
@@ -171,20 +172,21 @@
                 if (gridArray[i + 1] && (gridArray[i + 1].value == 1 || gridArray[i + 1].value == 3)) {
                     count++;
                 }
-                if (gridArray[i + 16] && (gridArray[i + 16].value == 1 || gridArray[i + 16].value == 3)) {
-                    count++;
-                }
                 if (gridArray[i + 17] && (gridArray[i + 17].value == 1 || gridArray[i + 17].value == 3)) {
                     count++;
                 }
                 if (gridArray[i + 18] && (gridArray[i + 18].value == 1 || gridArray[i + 18].value == 3)) {
                     count++;
                 }
+                if (gridArray[i + 19] && (gridArray[i + 19].value == 1 || gridArray[i + 19].value == 3)) {
+                    count++;
+                }
 
                 // Any live cell with 1 or 0 or greater than 4 neighbors dies (2 or 3 3 neighbors live)
                 if (gridArray[i]) {
-
+                    console.log("Checking value, should be 1: " + gridArray[i].value);                    
                     if (count >= 4 || count == 0 || count == 1) {
+                        console.log('Space: ' + i + ' has ' + count + ' neighbors');
                         gridArray[i] = {};
                         gridArray[i].value = 3; //3 is just a temporary value for going to die
                         deadColor = 'rgb(255, 255, 255)';
@@ -205,15 +207,15 @@
                         gridArray[i].color = AliveColor;
                         gridArray[i].coords = { x, y, sqrX, sqrY };
                         ctx.fillStyle = (AliveColor);
-                        ctx.fillRect(sqrX, sqrY, 20, 20);
+                        ctx.fillRect(sqrX, sqrY, 18, 18);
                     }
                 }
             }
 
             // now change everything to their normal numbers 3-> undefined and 4->1
-            for (var i = 18; i <= 271; i++) {
+            for (var i = 19; i <= 304; i++) {
                 if (gridArray[i] && gridArray[i].value == 3) {
-                    gridArray[i] = null;
+                    gridArray[i].value = undefined;
                 } else if (gridArray[i] && gridArray[i].value == 4) {
                     gridArray[i].value = 1;
                 }
