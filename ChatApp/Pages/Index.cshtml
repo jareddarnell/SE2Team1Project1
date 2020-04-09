@@ -55,7 +55,7 @@
 
         // GAME GRID ARRAY
         var gridArray = new Array(323);
-        //setting all the edges seperately cause gd this is long
+        // setting all the edges seperately cause gd this is long
         gridArray[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17] = { color: '', value: 0, coords: null };
         gridArray[18, 36, 54, 72, 90, 108, 126, 144, 162, 180, 198, 216, 234, 252, 270, 288] = { color: '', value: 0, coords: null };
         gridArray[35, 53, 71, 89, 107, 125, 143, 161, 179, 197, 215, 233, 251, 269, 287, 305] = { color: '', value: 0, coords: null };
@@ -114,33 +114,30 @@
             } else if (gridArray[arraySpot].value == 1 && gridArray[arraySpot].color == color) {
                 gridArray[arraySpot] = undefined;
                 ctx.clearRect(sqrX, sqrY, 18, 18);
+
+            } else if (gridArray[arraySpot].value == 2) {
+                gridArray[arraySpot] = undefined;
+                ctx.clearRect(sqrX, sqrY, 18, 18);
             }
 
         }// end addToArray()
 
-        function renderCell(x, y, sqrX, sqrY, c = color) {
-            var arraySpot;
-            arraySpot = ((x + 1) * 18) + (y + 1);
-
-            gridArray[arraySpot] = {};
-            gridArray[arraySpot].value = 1;
-            gridArray[arraySpot].color = c;
-            gridArray[arraySpot].coords = { x, y, sqrX, sqrY };
+        function renderCell(sqrX, sqrY, c = color) {
             ctx.clearRect(sqrX, sqrY, 18, 18);
             ctx.fillStyle = (c);
             ctx.fillRect(sqrX, sqrY, 18, 18);
-        }
+        }// end renderCell()
 
 
         function reRender() {
             for (var i = 0; i < gridArray.length; i++) {
-
+                
+                // render alive cell
                 if (gridArray[i] && gridArray[i].coords) {
-                    renderCell(gridArray[i].coords.x, gridArray[i].coords.y, gridArray[i].coords.sqrX, gridArray[i].coords.sqrY, gridArray[i].color);
+                    renderCell(gridArray[i].coords.sqrX, gridArray[i].coords.sqrY, gridArray[i].color);
                 }
-
             }
-        }
+        }// end reRender()
 
 
         // this function will run the entire game
@@ -199,7 +196,7 @@
                 // see if any dead with 3 neighbors will come to life
                 else if (!gridArray[i]) {
                     // TO DO: Figure out the random color information
-                    //AVERAGE COLOR GOES IN HERE SOMEWHERE
+                    // AVERAGE COLOR GOES IN HERE SOMEWHERE
                     if (count == 3) {
                         gridArray[i] = {};
                         gridArray[i].value = 4; // 4 will just be a temporary value for going to come to life
@@ -215,9 +212,9 @@
             // now change everything to their normal numbers 3-> undefined and 4->1
             for (var i = 19; i <= 304; i++) {
                 if (gridArray[i] && gridArray[i].value == 3) {
-                    gridArray[i].value = undefined;
+                    gridArray[i] = null;
                 } else if (gridArray[i] && gridArray[i].value == 4) {
-                    gridArray[i].value = 1;
+                    gridArray[i].value = 2;
                 }
             }
 
