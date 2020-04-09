@@ -111,15 +111,10 @@
                 ctx.fillStyle = (c);
                 ctx.fillRect(sqrX, sqrY, 18, 18);
 
-            } else if (gridArray[arraySpot].value == 1 && gridArray[arraySpot].color == color) {
-                gridArray[arraySpot] = undefined;
-                ctx.clearRect(sqrX, sqrY, 18, 18);
-
-            } else if (gridArray[arraySpot].value == 2) {
+            } else if (gridArray[arraySpot].value == 1) {
                 gridArray[arraySpot] = undefined;
                 ctx.clearRect(sqrX, sqrY, 18, 18);
             }
-
         }// end addToArray()
 
         function renderCell(sqrX, sqrY, c = color) {
@@ -214,7 +209,7 @@
                 if (gridArray[i] && gridArray[i].value == 3) {
                     gridArray[i] = null;
                 } else if (gridArray[i] && gridArray[i].value == 4) {
-                    gridArray[i].value = 2;
+                    gridArray[i].value = 1;
                 }
             }
 
