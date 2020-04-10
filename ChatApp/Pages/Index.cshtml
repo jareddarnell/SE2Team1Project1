@@ -11,6 +11,7 @@
     <script>// GLOBAL FEATURES /////////////////////////////////////////////////////////////////////////////
 
         var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build(); //local setting
+        //var connection = new signalR.HubConnectionBuilder().withUrl("http://students.cs.weber.edu/Group123/chatHub").build(); // Server setting
 
         // ORIGINAL GAME GRID
         var drawGrid = function (ctx, w, h) {
@@ -43,11 +44,56 @@
         }
         var color = random_rgba();
 
-        //Stolen from https://stackoverflow.com/questions/10970958/get-a-color-component-from-an-rgb-string-in-javascript
-        function rgb_parser(rgb)
+        //RGB Parser function
+        function rgb_parser(rgb, selection)
         {
-            rgb = rgb.substring(4, rgb.length-1).replace(/ /g, '').split(',');
-            return rgb;
+            rgb = rgb.toString();
+
+            rgb = rgb.substring(4, rgb.length - 1).replace(/ /g, '').split(',');
+
+            if (selection == 'r')
+            {
+                return rgb[0];
+            }
+
+            if (selection == 'g')
+            {
+                return rgb[1];
+            }
+
+            if (selection == 'b')
+            {
+                rgb[2] = rgb[2].replace(")", "");
+
+                return rgb[2];
+            }
+        }
+
+        //Function to average RGB colors
+        function rgb_average(...colors)
+        {
+            var length = arguments.length + 1;
+
+            var sumred = 0;
+            var sumgreen = 0;
+            var sumblue = 0;
+
+            function rgb_averager(color)
+            {
+                sumred += rgb_parser(color, 'r');
+                sumgreen += rgb_parser(color, 'g');
+                sumblue += rgb_parser(color, 'b');
+            }
+
+            colors.forEach(rgb_averager);
+
+            var avgred = sumred / length;
+            var avggreen = sumgreen / length;
+            var avgblue = sumblue / length;
+
+            console.log('rgb: ' + sumred + ' ' + sumgreen + ' ' + sumblue);
+
+            return 'rgb(' + avgred + ',' + avggreen + ',' + avgblue + ')';
         }
 
         // GAME GRID
@@ -195,7 +241,102 @@
                     if (count == 3) {
                         gridArray[i] = {};
                         gridArray[i].value = 4; // 4 will just be a temporary value for going to come to life
-                        AliveColor = 'rgba(0,0,0,0.5)';
+
+                        var colorList = [];
+                        var AliveColor = 'rgb(0,0,0)'; //fallback color
+
+                        //do out-of-bounds checks
+                        var toprow = 0;
+                        var bottomrow = 0;
+                        var leftcolumn = 0;
+                        var rightcolumn = 0;
+
+                        if ((i % 18) == 0) {
+                            toprow = 1;
+                        }
+                        else {
+                            toprow = 0;
+                        }
+
+                        if (((i + 1) % 18) == 0) {
+                            bottomrow = 1;
+                        }
+                        else {
+                            bottomrow = 0;
+                        }
+
+                        if (i < 18) {
+                            leftcolumn = 1;
+                        }
+                        else {
+                            leftcolumn = 0;
+                        }
+
+                        if ((i > 305) && (i < 324)) {
+                            rightcolumn = 1;
+                        }
+                        else {
+                            rightcolumn = 0;
+                        }
+
+                        //load colors into colorList
+                        //check cardinal
+                        if ( (toprow == 0) && (gridArray[i - 1] != null) )
+                        {
+                            colorList.push(gridArray[i - 1].color);
+                            console.log("Top middle color");
+                        }
+
+                        if ( (bottomrow == 0) && (gridArray[i + 1] != null))
+                        {
+                            colorList.push(gridArray[i + 1].color);
+                            console.log("Bottom middle color");
+                        }
+
+                        if ( (leftcolumn == 0) && (gridArray[i - 18] != null) )
+                        {
+                            colorList.push(gridArray[i - 18].color);
+                            console.log("Left middle color");
+                        }
+
+                        if ( (rightcolumn == 0) && (gridArray[i + 18] != null) )
+                        {
+                            colorList.push(gridArray[i + 18].color);
+                            console.log("Right middle color");
+                        }
+
+                        //check diagonal
+                        //check top-left
+                        if ( (leftcolumn == 0) && (toprow == 0) && (gridArray[i - 19] != null) )
+                        {
+                            colorList.push(gridArray[i - 19].color);
+                            console.log("Top left color");
+                        }
+
+                        //check top-right
+                        if ( (rightcolumn == 0) && (toprow == 0) && (gridArray[i + 17] != null) )
+                        {
+                            colorList.push(gridArray[i + 17].color);
+                            console.log("Top right color");
+                        }
+
+                        //check bottom-left
+                        if ( (leftcolumn == 0) && (bottomrow == 0) && (gridArray[i - 17] != null) )
+                        {
+                            colorList.push(gridArray[i - 17].color);
+                            console.log("Top left color");
+                        }
+
+                        //check bottom-right
+                        if ( (rightcolumn == 0) && (bottomrow == 0) && (gridArray[i + 19] != null) )
+                        {
+                            colorList.push(gridArray[i + 19].color);
+                            console.log("Top right color");
+                        }
+
+                        //Average all the colors and assign to AliveColor
+                        AliveColor = rgb_average(colorList);
+
                         gridArray[i].color = AliveColor;
                         gridArray[i].coords = { x, y, sqrX, sqrY };
                         ctx.fillStyle = (AliveColor);
